@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+
+<body>
+
+    <div>
+
+        <h2>Questions</h2>
+    </div>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        
+        {% for question in questionset %}
+        <p >{{question.question_text}}</p>
+   <div>
+       <input type="radio" name="{{question.qid|stringformat:"s"}}" value="{{question.option1}}" id="">
+       <label for="answer1">{{question.option1}}</label>
+    </div>
+    <div>
+        <input type="radio" name="{{question.qid|stringformat:"s"}}" value="{{question.option2}}" id="">
+        <label for="answer2">{{question.option2}}</label>
+    </div>
+    <div>
+        <input type="radio" name="{{question.qid|stringformat:"s"}}" value="{{question.option3}}" id="">
+        <label for="answer3">{{question.option3}}</label>
+    </div>
+    <div>
+        <input type="radio" name="{{question.qid|stringformat:"s"}}" value="{{question.option4}}" id="">
+        <label for="answer4">{{question.option4}}</label>
+    </div>
+   
+    
+    {% endfor %}
+    <input type="submit" value="Submit">
+</form>
+</body>
+
+</html>
