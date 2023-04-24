@@ -1,25 +1,42 @@
-from django.auth import authenticate,login,logout
-from django.auth.models import User
+from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.models import User
 from django.shortcuts import render,HttpResponse
 
 from .models import Questions
 from random import shuffle
-# Create your views here.
+
+"""
+Homepage
+"""
 def home(requests):
+    return render(requests,'home.html')
+
+"""
+api to choosing answer to the question area()
+"""
+def questionArea(requests):
     questionset=list(Questions.objects.all())
-    shuffle(questionset)
+    shuffle(questionset)  #shuffle the question in list
     if requests.method=='POST':
         score=0
+        wrong_question_id=[]
+
         for question in questionset:
-            if question.correct_answer==requests.POST[str(question.qid)]:
+            if question.correct_answer!=requests.POST[str(question.qid)]: #if answer is incorrect
+                wrong_question_id.append(question.qid)
+
+            else:  #if answer is correct
                 score+=1
+            
+        return HttpResponse('score is '+str(score)+'\n'+str(len(wrong_question_id)))
 
-        
-        return HttpResponse('score is '+str(score))
+
+    return render(requests,'questions.html',{'questionset':questionset})
 
 
-    return render(requests,'home.html',{'questionset':questionset})
-
+"""
+ADD question manually 
+"""
 def add_questions(requests):
     if requests.method=='POST':
         question_text=requests.POST['question_text']
@@ -32,7 +49,9 @@ def add_questions(requests):
         return HttpResponse('question added')
     return render(requests,'add_questions.html')
 
-
+"""
+AUthentications
+"""
 def sign_up(requests):
     if requests.method=='POST':
         first_name=requests.POST['first_name']
