@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.models import User
-from django.shortcuts import render,HttpResponse
+from django.shortcuts import render
+from django.http import JsonResponse,HttpResponse
 
 from .models import Questions
 from random import shuffle
@@ -28,7 +29,8 @@ def questionArea(requests):
             else:  #if answer is correct
                 score+=1
             
-        return HttpResponse('score is '+str(score)+'\n'+str(len(wrong_question_id)))
+        return JsonResponse({'score':score,
+                            'wrong_question_id':wrong_question_id})
 
 
     return render(requests,'questions.html',{'questionset':questionset})
