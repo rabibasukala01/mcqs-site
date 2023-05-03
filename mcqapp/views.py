@@ -2,9 +2,11 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.http import JsonResponse,HttpResponse
+from django.contrib.auth.decorators import login_required
 
 from .models import Questions
 from random import shuffle
+from datetime import datetime
 
 """
 Homepage
@@ -59,17 +61,23 @@ def sign_up(requests):
         first_name=requests.POST['first_name']
         last_name=requests.POST['last_name']
         username=requests.POST['username']
-        password=requests.POST['password']
         email=requests.POST['email']
+        password1=requests.POST['password1']
+        password2=requests.POST['password2']
+
+        #Todo -basic auth handle:
+        if password1 != password2:
+            return HttpResponse('cant create')
+        
         try:
             users = User.objects.create_user(username, email, password1)
             users.first_name = first_name
             users.last_name = last_name
+            users.last_login=datetime.now()
             users.save() 
             return HttpResponse('user created')
         except:
-            return HttpResponse('user created')
-           
+            pass
 
     return render(requests,'sign_up.html')
 
@@ -84,6 +92,7 @@ def sign_in(requests):
 
     return render(requests,'sign_in.html')
 
+@login_required
 def sign_out(requests):
     logout(requests)
     return HttpResponse('logged out')
