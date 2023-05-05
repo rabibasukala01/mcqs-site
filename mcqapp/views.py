@@ -22,18 +22,26 @@ def questionArea(requests):
     shuffle(questionset)  #shuffle the question in list
     if requests.method=='POST':
         score=0
-        wrong_question_id=[]
-
+        ur_answer=[] #to store user's wrong answer
+        wrong_questions=[] #to store wrong question 
         for question in questionset:
             if question.correct_answer!=requests.POST[str(question.qid)]: #if answer is incorrect
-                wrong_question_id.append(question.qid)
+                ur_answer.append(requests.POST[str(question.qid)])
+                
+                 # to get the each wrong question object from the id of the question
+                wrong_questions.append(Questions.objects.get(qid=question.qid)) #filter returns the queryset all the object with the given id (so need to do [0]),get returns only the object with the given id
 
             else:  #if answer is correct
                 score+=1
-            
-        return JsonResponse({'score':score,
-                            'wrong_question_id':wrong_question_id})
-
+       
+        
+        wrongs=zip(wrong_questions,ur_answer) #ziping the wrong question object and user's wrong answer
+        context={
+            'score':score,
+           'wrongs':wrongs,
+        }
+        
+        return render(requests,'result.html',context)
 
     return render(requests,'questions.html',{'questionset':questionset})
 
