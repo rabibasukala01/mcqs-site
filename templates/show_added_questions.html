@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% for question in questions %}
+    {{ question.question_text }}[{{question.qid}}]<br>
+    option1: {{question.option1}}<br>
+    option2: {{question.option2}}<br>
+    option3: {{question.option3}}<br>
+    option4: {{question.option4}}<br>
+    correct answer: {{question.correct_answer}}<br><br>
+
+    <a href="/show_added_questions/accept/{{question.qid}}">accept</a>
+    <a href="/show_added_questions/reject/{{question.qid}}">reject</a> <br><br>
+    {% endfor %}
+</body>
+</html>
