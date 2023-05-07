@@ -1,8 +1,22 @@
 from django.db import models
 import uuid
+from django.contrib.auth.models import User
 
 
 # Create your models here.
+
+"""
+extending user fields
+"""
+
+
+class Points(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    points = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.user.username
+
 
 """
 models to add question by  admins
@@ -35,6 +49,7 @@ class QuestionsADD(models.Model):
     option3 = models.CharField(max_length=300)
     option4 = models.CharField(max_length=300)
     correct_answer = models.CharField(max_length=300)
+    who_added = models.CharField(max_length=300, default="anonymous")
 
     def __str__(self):
         return self.question_text + "-" + str(self.qid)

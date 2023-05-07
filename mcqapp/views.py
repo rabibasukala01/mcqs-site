@@ -1,10 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 
-from .models import Questions, QuestionsADD
+from .models import Questions, QuestionsADD, Points
 from random import shuffle
 from datetime import datetime
 
@@ -61,6 +61,7 @@ ADD question manually
 """
 
 
+@login_required
 def add_questions(requests):
     if requests.method == "POST":
         question_text = requests.POST["question_text"]
@@ -76,7 +77,9 @@ def add_questions(requests):
             option3=option3,
             option4=option4,
             correct_answer=correct_answer,
+            who_added=requests.user,
         ).save()
+        # print(requests.user)
 
         return HttpResponse(
             "Question added! thank you for your contribution.We will shortly view your question"
@@ -94,7 +97,9 @@ def show_added_questions(requests):
     return render(requests, "show_added_questions.html", {"questions": questions})
 
 
-"""accept the question"""
+"""
+accept the question and add points to that contributor
+"""
 
 
 def accept_added_questions(request, qid):
@@ -114,10 +119,16 @@ def accept_added_questions(request, qid):
         correct_answer=correct_answer,
     ).save()
 
+    user = User.objects.get(username=thatquestion.who_added)
+    pointsOBJ = Points.objects.get(user=user.id)
+    pointsOBJ.points = pointsOBJ.points + 1
+    pointsOBJ.save()  # update the points of the user in the Points db |
+
     # delete from secondary db(QuestionADD) after adding to primary db(Questions)
     thatquestion.delete()
 
-    return HttpResponse(f"Question of id {qid} is added to the Question db(primary)")
+    print(f"Question of id {qid} is added to the Question db(primary)")
+    return redirect("show_added_questions")
 
 
 """
@@ -156,6 +167,8 @@ def sign_up(requests):
             users.last_name = last_name
             users.last_login = datetime.now()
             users.save()
+            extended_user = Points(user=users, points=0)
+            extended_user.save()
             return HttpResponse("user created")
         except:
             pass
