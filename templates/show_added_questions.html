@@ -8,6 +8,8 @@
 </head>
 <body>
     {% for question in questions %}
+
+    category:||{{question.category.category_name}}<br>
     {{ question.question_text }}[{{question.qid}}]<br>
     option1: {{question.option1}}<br>
     option2: {{question.option2}}<br>

@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 
-from .models import Questions, QuestionsADD, Points
+from .models import Questions, QuestionsADD, Points, Category
 from random import shuffle
 from datetime import datetime
 
@@ -70,6 +70,7 @@ def add_questions(requests):
         option3 = requests.POST["option3"]
         option4 = requests.POST["option4"]
         correct_answer = requests.POST["correct_answer"]
+        category_select = requests.POST["select"]
         QuestionsADD(
             question_text=question_text,
             option1=option1,
@@ -78,13 +79,18 @@ def add_questions(requests):
             option4=option4,
             correct_answer=correct_answer,
             who_added=requests.user,
+            category=Category.objects.get(id=category_select),
         ).save()
         # print(requests.user)
 
         return HttpResponse(
             "Question added! thank you for your contribution.We will shortly view your question"
         )
-    return render(requests, "add_questions.html")
+    context = {
+        "categories": Category.objects.all(),
+    }
+
+    return render(requests, "add_questions.html", context)
 
 
 """
@@ -110,6 +116,8 @@ def accept_added_questions(request, qid):
     option3 = thatquestion.option3
     option4 = thatquestion.option4
     correct_answer = thatquestion.correct_answer
+    category_id = thatquestion.category.id
+
     Questions(
         question_text=question_text,
         option1=option1,
@@ -117,6 +125,7 @@ def accept_added_questions(request, qid):
         option3=option3,
         option4=option4,
         correct_answer=correct_answer,
+        category=Category.objects.get(id=category_id),
     ).save()
 
     user = User.objects.get(username=thatquestion.who_added)
