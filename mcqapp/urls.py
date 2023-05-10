@@ -6,7 +6,14 @@ urlpatterns = [
     path("", views.questionArea, name="questionArea"),
     path("add", views.add_questions, name="add_questions"),
     path(
-        "show_added_questions", views.show_added_questions, name="show_added_questions"
+        "dashboard/",
+        views.admindashboard,
+        name="admindashboard",
+    ),
+    path(
+        "dashboard/show_added_questions/<str:id>",
+        views.show_added_questions,
+        name="show_added_questions",
     ),
     path(
         "show_added_questions/accept/<str:qid>",

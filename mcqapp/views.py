@@ -98,9 +98,22 @@ show added questions
 """
 
 
-def show_added_questions(requests):
-    questions = QuestionsADD.objects.all()
+@login_required
+def show_added_questions(requests, id):
+    if not (requests.user.is_staff or requests.user.is_superuser):
+        return HttpResponse("You are not allowed to view this page")
+    questions = QuestionsADD.objects.filter(category=id)
     return render(requests, "show_added_questions.html", {"questions": questions})
+
+
+@login_required
+def admindashboard(requests):
+    if not (requests.user.is_staff or requests.user.is_superuser):
+        return HttpResponse("You are not allowed to view this page")
+
+    return render(
+        requests, "admin_dashboard.html", {"categories": Category.objects.all()}
+    )
 
 
 """
